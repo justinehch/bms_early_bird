@@ -14,70 +14,46 @@
             font-family: -apple-system, system-ui, sans-serif;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             color: white; display: flex; flex-direction: column; align-items: center; padding: 20px;
-            margin: 0; transition: background 0.3s;
+            margin: 0;
         }
 
         /* Fullscreen Toggle Button */
         #fullscreen-btn {
-            position: fixed;
+            position: absolute;
             top: 15px;
             right: 15px;
             background: rgba(212, 175, 55, 0.2);
             border: 1px solid var(--gold);
             color: var(--light-gold);
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 0.8em;
-            z-index: 10000;
+            z-index: 1000;
         }
+        #fullscreen-btn:hover { background: var(--gold); color: black; }
 
-        /* THE CONTAINER */
         .container {
             text-align: center; background: rgba(255, 255, 255, 0.03); padding: 30px;
-            border-radius: 25px; border: 1px solid var(--gold); width: 95%; max-width: 800px; 
-            margin-top: 50px; transition: all 0.4s ease;
-            position: relative; z-index: 1;
-        }
-
-        /* CINEMA MODE (Pseudo-Fullscreen for iOS) */
-        .cinema-mode {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: none !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-            border: none !important;
-            background: black !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            z-index: 9999 !important;
+            border-radius: 25px; border: 1px solid var(--gold); width: 95%; max-width: 800px; margin-top: 40px;
         }
 
         #display-gift {
-            font-size: clamp(35px, 10vw, 65px); font-weight: 800; color: #fff; 
-            text-shadow: 0 0 25px var(--gold);
-            min-height: 250px; display: flex; align-items: center; justify-content: center; margin: 15px 0;
+            font-size: clamp(28px, 7vw, 55px); font-weight: 800; color: #fff; text-shadow: 0 0 25px var(--gold);
+            min-height: 200px; display: flex; align-items: center; justify-content: center; margin: 15px 0;
         }
 
         button#draw-btn {
             background: linear-gradient(135deg, var(--gold), var(--light-gold));
-            border: none; padding: 20px 60px; font-size: 24px; font-weight: bold;
+            border: none; padding: 20px 60px; font-size: 22px; font-weight: bold;
             border-radius: 60px; cursor: pointer; color: #000; text-transform: uppercase;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
-            touch-action: manipulation;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
         button:disabled { background: #444 !important; color: #777 !important; cursor: not-allowed; }
 
         /* Tables & Lists */
-        .summary-section { width: 95%; max-width: 800px; margin-top: 40px; transition: opacity 0.3s; }
-        .hidden { opacity: 0; pointer-events: none; }
-
+        .summary-section { width: 95%; max-width: 800px; margin-top: 40px; }
         table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #222; }
         th { background: rgba(212, 175, 55, 0.2); color: var(--light-gold); text-transform: uppercase; font-size: 0.85em; }
@@ -85,7 +61,7 @@
         #history-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; list-style: none; padding: 0; margin-top: 20px; }
         .history-item { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold); padding: 10px; border-radius: 8px; font-size: 0.8em; text-align: center; }
 
-        .admin-panel { margin-top: 50px; opacity: 0.2; display: flex; gap: 15px; align-items: center; justify-content: center; }
+        .admin-panel { margin-top: 50px; opacity: 0.3; display: flex; gap: 15px; align-items: center; border-top: 1px solid #333; padding-top: 20px; width: 100%; justify-content: center; }
 
         .spinning { animation: spinBlur 0.1s infinite alternate; }
         @keyframes spinBlur { from { opacity: 0.8; filter: blur(1px); } to { opacity: 1; filter: blur(0px); } }
@@ -93,22 +69,20 @@
 </head>
 <body>
 
-    <button id="fullscreen-btn" onclick="handleFullscreen()">⛶ Fullscreen</button>
+    <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
 
-    <div id="main-app" class="container">
-        <h1 id="main-title" style="color:var(--gold); letter-spacing: 3px; margin: 0;">BMS ANNUAL DINNER</h1>
-        <div id="sub-title" style="color:var(--light-gold); font-size: 1em; margin-bottom: 15px;">Early Bird Gift Draw</div>
-        
+    <div class="container">
+        <h1 style="color:var(--gold); letter-spacing: 3px;">BMS ANNUAL DINNER</h1>
+        <div style="color:var(--light-gold); font-size: 1em; margin-bottom: 15px;">Early Bird Gift Draw</div>
         <div id="display-gift">Ready?</div>
-        
         <button id="draw-btn" onclick="triggerDraw()">Spin & Draw</button>
         <p id="status-text" style="color: #666; font-size: 0.85em; margin-top: 15px;">Syncing with BMS Cloud...</p>
     </div>
 
-    <div id="extra-content" class="summary-section">
-        <h3 style="color:var(--gold); text-align:center; text-transform:uppercase;">Remaining Balance</h3>
+    <div class="summary-section">
+        <h3 style="color:var(--gold); text-align:center; text-transform:uppercase;">Remaining Gift Balance</h3>
         <table>
-            <thead><tr><th>Gift</th><th style="text-align:center;">Left</th></tr></thead>
+            <thead><tr><th>Gift Name</th><th style="text-align:center;">Left</th></tr></thead>
             <tbody id="balance-body"></tbody>
         </table>
 
@@ -117,12 +91,13 @@
     </div>
 
     <div class="admin-panel">
-        <button onclick="downloadCSV()">Export CSV</button>
+        <button onclick="downloadCSV()">Export Winners</button>
         <label style="font-size: 12px;"><input type="checkbox" id="safety-lock" onchange="toggleReset()"> Unlock Reset</label>
-        <button id="reset-btn" style="background:#500; color:white; display:none;" onclick="resetDatabase()">Reset Database</button>
+        <button id="reset-btn" style="background:#500; color:white; display:none;" onclick="resetDatabase()">Reset 100 Gifts</button>
     </div>
 
     <script>
+        // --- DEFINE FUNCTIONS FIRST ---
         let pool = [];
         let history = [];
         const GIFT_MANIFEST = [
@@ -135,38 +110,16 @@
             { name: "RM100 grab voucher", qty: 6 }, { name: "RM100 ZUS coffee voucher", qty: 6 }
         ];
 
-        // --- FULLSCREEN LOGIC ---
-        function handleFullscreen() {
-            const container = document.getElementById('main-app');
-            const extras = document.getElementById('extra-content');
-            const btn = document.getElementById('fullscreen-btn');
-
-            // 1. Try real Fullscreen API first (PC / Android / iPad)
-            if (document.fullscreenEnabled || document.webkitFullscreenEnabled) {
-                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen();
-                    } else if (document.documentElement.webkitRequestFullscreen) {
-                        document.documentElement.webkitRequestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) { document.exitFullscreen(); }
-                    else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-                }
-            }
-
-            // 2. Always toggle Cinema Mode (for iOS / In-App Browser)
-            container.classList.toggle('cinema-mode');
-            if (container.classList.contains('cinema-mode')) {
-                extras.classList.add('hidden');
-                btn.innerText = "✕ Exit Fullscreen";
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
             } else {
-                extras.classList.remove('hidden');
-                btn.innerText = "⛶ Fullscreen";
+                document.exitFullscreen();
             }
         }
 
-        // --- CORE DRAW LOGIC ---
         function triggerDraw() {
             if (pool.length === 0) return alert("All gifts have been awarded!");
             const btn = document.getElementById('draw-btn');
@@ -193,4 +146,57 @@
         }
 
         function resetDatabase() {
-            if (confirm("Reset everything to 10
+            if (confirm("Restore pool to 100 items?")) {
+                let newPool = [];
+                GIFT_MANIFEST.forEach(item => { for(let i=0; i<item.qty; i++) newPool.push(item.name); });
+                firebase.database().ref('luckyDraw').set({ pool: newPool, history: [], lastWinner: "Ready?" });
+                document.getElementById('safety-lock').checked = false; toggleReset();
+            }
+        }
+
+        function downloadCSV() {
+            let csv = "Draw,Gift\n" + history.map((g, i) => `${i+1},${g}`).join("\n");
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'BMS_Winners.csv'; a.click();
+        }
+
+        // --- FIREBASE INIT ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDQALQedZcSrYdwk-JYi88ce0HXrSlQsE",
+            authDomain: "bms-early-bird-draw.firebaseapp.com",
+            databaseURL: "https://bms-early-bird-draw-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "bms-early-bird-draw",
+            storageBucket: "bms-early-bird-draw.firebasestorage.app",
+            messagingSenderId: "642804004151",
+            appId: "1:642804004151:web:3afbb70a513248b16f56b2",
+            measurementId: "G-8CBYNGWQWM"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        db.goOffline(); db.goOnline(); // iOS Handshake Fix
+
+        db.ref('luckyDraw').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) { document.getElementById('status-text').innerText = "Database Empty. Please Reset."; return; }
+            
+            pool = data.pool || [];
+            history = data.history || [];
+            document.getElementById('display-gift').innerText = data.lastWinner || "Ready?";
+            document.getElementById('status-text').innerText = `${pool.length} gifts left in the pool`;
+
+            document.getElementById('balance-body').innerHTML = GIFT_MANIFEST.map(item => {
+                const count = pool.filter(p => p === item.name).length;
+                return `<tr style="opacity:${count === 0 ? 0.3 : 1}">
+                    <td>${item.name}</td>
+                    <td style="text-align:center; font-weight:bold; color:var(--light-gold);">${count}</td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById('history-list').innerHTML = [...history].reverse()
+                .map((g, i) => `<li class="history-item">#${history.length-i}: ${g}</li>`).join('');
+        });
+    </script>
+</body>
+</html>
