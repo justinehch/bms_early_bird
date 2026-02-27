@@ -9,121 +9,159 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     
     <style>
-        :root {
-            --gold: #d4af37;
-            --light-gold: #f9e29c;
-            --bg-dark: #121212;
+        :root { --gold: #d4af37; --light-gold: #f9e29c; }
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            color: white; display: flex; flex-direction: column; align-items: center; padding: 20px;
+            margin: 0;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            -webkit-font-smoothing: antialiased;
+        /* Fullscreen Toggle Button */
+        #fullscreen-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold);
+            color: var(--light-gold);
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            z-index: 1000;
         }
+        #fullscreen-btn:hover { background: var(--gold); color: black; }
 
         .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 30px;
-            border-radius: 25px;
-            border: 1px solid var(--gold);
-            box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
-            width: 95%;
-            max-width: 800px;
-            margin-top: 20px;
+            text-align: center; background: rgba(255, 255, 255, 0.03); padding: 30px;
+            border-radius: 25px; border: 1px solid var(--gold); width: 95%; max-width: 800px; margin-top: 40px;
         }
 
-        h1 { color: var(--gold); margin: 0; font-size: 2.2em; text-transform: uppercase; letter-spacing: 3px; }
-        .sub-title { color: var(--light-gold); font-size: 1.1em; margin-bottom: 20px; font-weight: 300; }
-
         #display-gift {
-            font-size: clamp(30px, 8vw, 55px);
-            font-weight: 800;
-            color: #fff;
-            text-shadow: 0 0 25px var(--gold);
-            min-height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 15px 0;
-            padding: 15px;
-            line-height: 1.2;
+            font-size: clamp(28px, 7vw, 55px); font-weight: 800; color: #fff; text-shadow: 0 0 25px var(--gold);
+            min-height: 200px; display: flex; align-items: center; justify-content: center; margin: 15px 0;
         }
 
         button#draw-btn {
             background: linear-gradient(135deg, var(--gold), var(--light-gold));
-            border: none;
-            padding: 18px 50px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            color: #000;
-            text-transform: uppercase;
+            border: none; padding: 20px 60px; font-size: 22px; font-weight: bold;
+            border-radius: 60px; cursor: pointer; color: #000; text-transform: uppercase;
             box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            touch-action: manipulation;
         }
 
-        button:disabled { background: #444 !important; color: #777 !important; cursor: not-allowed; transform: none !important; }
-        #status-text { margin-top: 15px; font-size: 0.9em; transition: color 0.3s; }
+        button:disabled { background: #444 !important; color: #777 !important; cursor: not-allowed; }
 
-        /* Inventory Table */
-        .inventory-section { margin-top: 35px; width: 95%; max-width: 800px; }
-        table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; font-size: 0.9em; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #222; }
-        th { background: rgba(212, 175, 55, 0.2); color: var(--light-gold); text-transform: uppercase; }
-        .qty-cell { text-align: center; font-weight: bold; color: var(--light-gold); width: 80px; }
-
-        .history-section { margin-top: 35px; width: 95%; max-width: 800px; }
-        #history-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; list-style: none; padding: 15px 0; }
-        .history-item { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold); padding: 8px; border-radius: 8px; font-size: 0.8em; text-align: center; }
-
-        .admin-panel { margin-top: 40px; padding: 20px; opacity: 0.4; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center; border-top: 1px solid #222; }
+        /* Tables & Lists */
+        .summary-section { width: 95%; max-width: 800px; margin-top: 40px; }
+        table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #222; }
+        th { background: rgba(212, 175, 55, 0.2); color: var(--light-gold); text-transform: uppercase; font-size: 0.85em; }
         
+        #history-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; list-style: none; padding: 0; margin-top: 20px; }
+        .history-item { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold); padding: 10px; border-radius: 8px; font-size: 0.8em; text-align: center; }
+
+        .admin-panel { margin-top: 50px; opacity: 0.3; display: flex; gap: 15px; align-items: center; border-top: 1px solid #333; padding-top: 20px; width: 100%; justify-content: center; }
+
         .spinning { animation: spinBlur 0.1s infinite alternate; }
         @keyframes spinBlur { from { opacity: 0.8; filter: blur(1px); } to { opacity: 1; filter: blur(0px); } }
     </style>
 </head>
 <body>
 
+    <button id="fullscreen-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+
     <div class="container">
-        <h1>BMS Annual Dinner</h1>
-        <div class="sub-title">(Early Bird Gift Draw)</div>
+        <h1 style="color:var(--gold); letter-spacing: 3px;">BMS ANNUAL DINNER</h1>
+        <div style="color:var(--light-gold); font-size: 1em; margin-bottom: 15px;">Early Bird Gift Draw</div>
         <div id="display-gift">Ready?</div>
-        <button id="draw-btn" onclick="triggerDraw()">Spin & Draw Gift</button>
-        <p id="status-text" style="color: #ffaa00;">Initializing Cloud...</p>
+        <button id="draw-btn" onclick="triggerDraw()">Spin & Draw</button>
+        <p id="status-text" style="color: #666; font-size: 0.85em; margin-top: 15px;">Syncing with BMS Cloud...</p>
     </div>
 
-    <div class="inventory-section">
-        <h3 style="color:var(--gold); text-align:center;">Remaining Balance</h3>
+    <div class="summary-section">
+        <h3 style="color:var(--gold); text-align:center; text-transform:uppercase;">Remaining Gift Balance</h3>
         <table>
-            <thead><tr><th>Gift Description</th><th style="text-align:center;">Qty</th></tr></thead>
+            <thead><tr><th>Gift Name</th><th style="text-align:center;">Left</th></tr></thead>
             <tbody id="balance-body"></tbody>
         </table>
-    </div>
 
-    <div class="history-section">
-        <h3 style="color:var(--gold); text-align:center; border-bottom: 1px solid #333; padding-bottom: 10px;">Winner History</h3>
+        <h3 style="color:var(--gold); text-align:center; text-transform:uppercase; margin-top: 40px;">Winners History</h3>
         <ul id="history-list"></ul>
     </div>
 
     <div class="admin-panel">
-        <button style="background:#222; color:var(--gold); border:1px solid var(--gold); padding:8px 15px; border-radius:5px;" onclick="downloadCSV()">Export CSV</button>
-        <div style="font-size: 0.8em; color: #666;">
-            <input type="checkbox" id="safety-lock" onchange="toggleReset()"> Unlock Reset
-        </div>
-        <button id="reset-btn" style="background:#500; color:white; padding:8px 15px; display:none;" onclick="resetDatabase()">System Reset</button>
+        <button onclick="downloadCSV()">Export Winners</button>
+        <label style="font-size: 12px;"><input type="checkbox" id="safety-lock" onchange="toggleReset()"> Unlock Reset</label>
+        <button id="reset-btn" style="background:#500; color:white; display:none;" onclick="resetDatabase()">Reset 100 Gifts</button>
     </div>
 
     <script>
-        // --- 1. FIREBASE CONFIG ---
+        // --- DEFINE FUNCTIONS FIRST ---
+        let pool = [];
+        let history = [];
+        const GIFT_MANIFEST = [
+            { name: "Jisulife handheld fan", qty: 10 }, { name: "Jisulife Neck fan", qty: 5 },
+            { name: "Festive tupperware set", qty: 10 }, { name: "Owala tumbler", qty: 5 },
+            { name: "Glasslock Set", qty: 15 }, { name: "Thermos lunchbox 3 & luminarc 2", qty: 5 },
+            { name: "La Gourmet Tiffin", qty: 2 }, { name: "Xiaomi powerbank", qty: 10 },
+            { name: "Xiaomi bluetooth speaker", qty: 7 }, { name: "Redmi earbud", qty: 8 },
+            { name: "Humidifier", qty: 5 }, { name: "RM100 e-wallet", qty: 6 },
+            { name: "RM100 grab voucher", qty: 6 }, { name: "RM100 ZUS coffee voucher", qty: 6 }
+        ];
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function triggerDraw() {
+            if (pool.length === 0) return alert("All gifts have been awarded!");
+            const btn = document.getElementById('draw-btn');
+            const display = document.getElementById('display-gift');
+            btn.disabled = true;
+            display.classList.add('spinning');
+
+            let spinInterval = setInterval(() => {
+                display.innerText = GIFT_MANIFEST[Math.floor(Math.random() * GIFT_MANIFEST.length)].name;
+            }, 80);
+
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                display.classList.remove('spinning');
+                const winner = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+                history.push(winner);
+                firebase.database().ref('luckyDraw').set({ pool, history, lastWinner: winner })
+                    .then(() => { btn.disabled = false; });
+            }, 2500);
+        }
+
+        function toggleReset() {
+            document.getElementById('reset-btn').style.display = document.getElementById('safety-lock').checked ? 'block' : 'none';
+        }
+
+        function resetDatabase() {
+            if (confirm("Restore pool to 100 items?")) {
+                let newPool = [];
+                GIFT_MANIFEST.forEach(item => { for(let i=0; i<item.qty; i++) newPool.push(item.name); });
+                firebase.database().ref('luckyDraw').set({ pool: newPool, history: [], lastWinner: "Ready?" });
+                document.getElementById('safety-lock').checked = false; toggleReset();
+            }
+        }
+
+        function downloadCSV() {
+            let csv = "Draw,Gift\n" + history.map((g, i) => `${i+1},${g}`).join("\n");
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'BMS_Winners.csv'; a.click();
+        }
+
+        // --- FIREBASE INIT ---
         const firebaseConfig = {
             apiKey: "AIzaSyBDQALQedZcSrYdwk-JYi88ce0HXrSlQsE",
             authDomain: "bms-early-bird-draw.firebaseapp.com",
@@ -135,119 +173,30 @@
             measurementId: "G-8CBYNGWQWM"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        db.goOffline(); db.goOnline(); // iOS Handshake Fix
 
-        // iOS FIX: Force database connection handshake
-        db.goOffline();
-        db.goOnline();
-
-        // --- 2. DATA SETUP ---
-        const GIFT_MANIFEST = [
-            { name: "Jisulife handheld fan", qty: 10 }, { name: "Jisulife Neck fan", qty: 5 },
-            { name: "Festive tupperware set", qty: 10 }, { name: "Owala tumbler", qty: 5 },
-            { name: "Glasslock Set", qty: 15 }, { name: "Thermos lunchbox 3 & luminarc 2", qty: 5 },
-            { name: "La Gourmet Tiffin", qty: 2 }, { name: "Xiaomi powerbank", qty: 10 },
-            { name: "Xiaomi bluetooth speaker", qty: 7 }, { name: "Redmi earbud", qty: 8 },
-            { name: "Humidifier", qty: 5 }, { name: "RM100 e-wallet", qty: 6 },
-            { name: "RM100 grab voucher", qty: 6 }, { name: "RM100 ZUS coffee voucher", qty: 6 }
-        ];
-
-        let pool = [];
-        let history = [];
-
-        // --- 3. REALTIME SYNC ---
         db.ref('luckyDraw').on('value', (snapshot) => {
             const data = snapshot.val();
-            const statusEl = document.getElementById('status-text');
+            if (!data) { document.getElementById('status-text').innerText = "Database Empty. Please Reset."; return; }
             
-            if (!data) {
-                statusEl.innerText = "Database Empty. Please Unlock & Reset.";
-                statusEl.style.color = "#ff4444";
-                return;
-            }
-
             pool = data.pool || [];
             history = data.history || [];
-            
-            statusEl.innerText = `${pool.length} gifts remaining in pool`;
-            statusEl.style.color = "#888";
             document.getElementById('display-gift').innerText = data.lastWinner || "Ready?";
-            
-            renderInventory();
-            renderHistory();
-        }, (error) => {
-            document.getElementById('status-text').innerText = "Connection Error: Check Rules";
-            document.getElementById('status-text').style.color = "#ff4444";
-        });
+            document.getElementById('status-text').innerText = `${pool.length} gifts left in the pool`;
 
-        // --- 4. FUNCTIONS ---
-        function renderInventory() {
-            const tbody = document.getElementById('balance-body');
-            tbody.innerHTML = GIFT_MANIFEST.map(item => {
-                const count = pool.filter(g => g === item.name).length;
-                return `<tr style="opacity: ${count === 0 ? '0.3' : '1'}">
-                            <td>${item.name}</td>
-                            <td class="qty-cell">${count}</td>
-                        </tr>`;
+            document.getElementById('balance-body').innerHTML = GIFT_MANIFEST.map(item => {
+                const count = pool.filter(p => p === item.name).length;
+                return `<tr style="opacity:${count === 0 ? 0.3 : 1}">
+                    <td>${item.name}</td>
+                    <td style="text-align:center; font-weight:bold; color:var(--light-gold);">${count}</td>
+                </tr>`;
             }).join('');
-        }
 
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = [...history].reverse().map((gift, idx) => 
-                `<li class="history-item">#${history.length - idx}: ${gift}</li>`
-            ).join('');
-        }
-
-        function triggerDraw() {
-            if (pool.length === 0) return alert("All gifts awarded!");
-            const btn = document.getElementById('draw-btn');
-            const display = document.getElementById('display-gift');
-            
-            btn.disabled = true;
-            display.classList.add('spinning');
-
-            let interval = setInterval(() => {
-                display.innerText = GIFT_MANIFEST[Math.floor(Math.random() * GIFT_MANIFEST.length)].name;
-            }, 80);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                display.classList.remove('spinning');
-
-                const winnerIndex = Math.floor(Math.random() * pool.length);
-                const winner = pool.splice(winnerIndex, 1)[0];
-                history.push(winner);
-
-                db.ref('luckyDraw').set({ pool, history, lastWinner: winner })
-                  .then(() => { btn.disabled = false; })
-                  .catch(e => alert("Save Error: " + e.message));
-            }, 2500);
-        }
-
-        function toggleReset() {
-            document.getElementById('reset-btn').style.display = document.getElementById('safety-lock').checked ? 'block' : 'none';
-        }
-
-        function resetDatabase() {
-            if (confirm("DANGER: Reset back to 100 gifts?")) {
-                let newPool = [];
-                GIFT_MANIFEST.forEach(item => { for(let i=0; i<item.qty; i++) newPool.push(item.name); });
-                db.ref('luckyDraw').set({ pool: newPool, history: [], lastWinner: "Ready?" });
-                document.getElementById('safety-lock').checked = false;
-                toggleReset();
-            }
-        }
-
-        function downloadCSV() {
-            let csv = "Order,Gift\n" + history.map((g, i) => `${i+1},${g}`).join("\n");
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'BMS_Winners.csv'; a.click();
-        }
+            document.getElementById('history-list').innerHTML = [...history].reverse()
+                .map((g, i) => `<li class="history-item">#${history.length-i}: ${g}</li>`).join('');
+        });
     </script>
 </body>
 </html>
